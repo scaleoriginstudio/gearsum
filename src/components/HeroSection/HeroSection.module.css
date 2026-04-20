@@ -1,0 +1,287 @@
+/* ─── Hero container ─────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-color: #040307;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ─── Centred SVG logo (scene 1) ─────────────────────────────────────────── */
+.logoWrapper {
+  position: relative;
+  z-index: 10;
+  width: clamp(280px, 72vw, 900px);
+  aspect-ratio: 195 / 161;
+  pointer-events: none;
+  flex-shrink: 0;
+  /* SVG scales as vectors — avoid promoting to a raster texture */
+}
+
+/* ─── Background photo overlay (scene 2) ────────────────────────────────── */
+.photo {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: url('/img/scroll2placeholder.png') center / cover no-repeat;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ─── Scene 2 UI overlay ─────────────────────────────────────────────────── */
+.sceneTwo {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: 0;
+  pointer-events: none; /* transparent to clicks until visible */
+  /* Dark gradient so text is legible over the photo */
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 10, 25, 0.45) 0%,
+    rgba(5, 10, 25, 0.10) 45%,
+    rgba(5, 10, 25, 0.72) 100%
+  );
+}
+
+/* Clicks enabled on sceneTwo children only when the overlay itself is interactive
+   (toggled via inline style in HeroSection.tsx once animation completes) */
+
+/* Header row */
+.s2Header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 2rem 2.5rem;
+}
+
+/* Logo + icons */
+.s2LogoArea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.s2LogoLink {
+  display: block;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.s2LogoWrapper {
+  width: 160px;
+  /* Flatten all colours to white, same technique as the navbar */
+  filter: brightness(0) invert(1);
+}
+
+/* Disable the SVG's internal emblem links so the parent Link captures clicks */
+.s2LogoWrapper a {
+  pointer-events: none;
+}
+
+.s2IconRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.s2Icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+.s2Icon:hover { opacity: 1; }
+
+/* Hamburger */
+.s2Hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.s2Line {
+  display: block;
+  width: 34px;
+  height: 2.5px;
+  background: #ffffff;
+  border-radius: 2px;
+}
+
+/* Bottom content */
+.s2Content {
+  padding: 0 2.5rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.s2Tagline {
+  font-family: 'Causten', 'Arial Narrow', Arial, sans-serif;
+  font-size: clamp(1.8rem, 3.6vw, 3.1rem);
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1.25;
+  text-align: left;
+  width: 100%;
+  margin: 0;
+}
+
+.s2Tagline strong { font-weight: 800; }
+.s2Tagline em     { font-style: italic; }
+
+/* CTA button */
+.s2Cta {
+  display: inline-block;
+  padding: 0.85rem 3rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.75);
+  color: #ffffff;
+  font-family: 'Causten', 'Arial Narrow', Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  background: transparent;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.s2Cta:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #ffffff;
+}
+
+/* ─── Full-screen menu overlay ──────────────────────────────────────────── */
+.menuOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #df7c30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menuClose {
+  position: absolute;
+  top: 2rem;
+  right: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.menuCloseLine {
+  display: block;
+  width: 34px;
+  height: 2.5px;
+  background: #ffffff;
+  border-radius: 2px;
+}
+
+.menuCloseLine:first-child { transform: rotate(45deg) translate(1px, 1px); }
+.menuCloseLine:last-child  { transform: rotate(-45deg) translate(1px, -1px); }
+
+.menuNav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2.5rem;
+  padding: 0 3rem;
+}
+
+.menuItem {
+  font-family: 'Causten', 'Arial Narrow', Arial, sans-serif;
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-weight: 700;
+  color: #ffffff;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  transition: opacity 0.2s ease;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.menuItem:hover { opacity: 0.6; }
+
+@media (max-width: 768px) {
+  .s2Header {
+    padding: 1.25rem 1.25rem;
+  }
+  .s2Content {
+    padding: 0 1.25rem 2.5rem;
+  }
+  .s2Tagline {
+    font-size: clamp(1.3rem, 5vw, 2rem);
+  }
+  .card {
+    width: 120px;
+  }
+  .cardImage {
+    width: 120px;
+    height: 143px;
+  }
+  .menuNav {
+    padding: 0 1.5rem;
+    gap: 1.75rem;
+  }
+}
+
+.menuIndex {
+  font-size: 0.45em;
+  font-weight: 400;
+  opacity: 0.55;
+  vertical-align: super;
+  margin-left: 0.3em;
+}
+
+/* ─── Product card ───────────────────────────────────────────────────────── */
+.card {
+  position: absolute;
+  width: 195px;
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+  transform-origin: center center;
+  z-index: 5;
+}
+
+.cardImage {
+  display: block;
+  width: 195px;
+  height: 233px;
+  object-fit: cover;
+}
+
+.cardLabel {
+  color: #ffffff;
+  font-family: 'Causten', 'Arial Narrow', Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 6px;
+  white-space: pre-line;
+}

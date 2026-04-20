@@ -1,0 +1,153 @@
+/* ============================================================
+   Shop page — page.module.css
+   ============================================================ */
+
+/* ----------------------------------------------------------
+   Page wrapper
+   ---------------------------------------------------------- */
+
+.page {
+  background: #fff;
+  min-height: 100vh;
+  /* navbar: 0 padding + 130px logo = 130px; add 6px buffer */
+  padding-top: 136px;
+}
+
+/* ----------------------------------------------------------
+   Category tabs
+   ---------------------------------------------------------- */
+
+.tabsWrapper {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 3rem);
+  border-bottom: 1px solid #ebebeb;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 1.1rem 1.6rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px; /* overlap the wrapper border-bottom */
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #aaa;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: #555;
+}
+
+/* Active tab — colour driven by --accent CSS var set inline */
+.tabActive {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+
+/* Tab icon — dimmed when inactive, full opacity when active */
+.tabIcon {
+  opacity: 0.35;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+.tabIconActive {
+  opacity: 1;
+}
+
+/* ----------------------------------------------------------
+   Product grid
+   ---------------------------------------------------------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem clamp(1rem, 4vw, 3rem) 5rem;
+}
+
+/* ----------------------------------------------------------
+   Product card
+   ---------------------------------------------------------- */
+
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #ebebeb;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.09);
+}
+
+/* Image area */
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  background: #f5f5f5;
+}
+
+/* Card body — below the image, clean white */
+.cardBody {
+  padding: 0.9rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.productName {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price {
+  font-size: 0.83rem;
+  color: #888;
+  margin: 0 0 0.6rem;
+}
+
+/* Buy Now — teal, full width */
+.btnBuy {
+  width: 100%;
+  padding: 0.5rem;
+  background: #37b9ac;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: opacity 0.2s ease;
+}
+
+.btnBuy:hover {
+  opacity: 0.85;
+}

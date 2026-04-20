@@ -1,0 +1,174 @@
+/* ============================================================
+   ContactSection.module.css
+   Full-viewport contact section — white bg, two-column layout.
+   ============================================================ */
+
+.section {
+  width: 100%;
+  height: 100vh;
+  /* Teal from the R letterform in the logo */
+  background-color: #37b9ac;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: clip;
+}
+
+/* Two-column grid: details left, form right */
+.inner {
+  width: 100%;
+  max-width: 1100px;
+  padding: 6rem 2.5rem 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+/* ----------------------------------------------------------
+   Left — details
+   ---------------------------------------------------------- */
+
+.heading {
+  font-size: clamp(2.2rem, 4.5vw, 4rem);
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin: 0 0 1rem;
+}
+
+.sub {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.7;
+  margin: 0 0 2.5rem;
+  max-width: 340px;
+}
+
+.contactList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contactItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.value {
+  font-size: 0.95rem;
+  color: #ffffff;
+  text-decoration: none;
+  line-height: 1.6;
+}
+
+a.value:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ----------------------------------------------------------
+   Right — form
+   ---------------------------------------------------------- */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Side-by-side name + email row */
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.fieldLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #1a1a1a;
+  background-color: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease;
+  font-family: inherit;
+  resize: none;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: #ffffff;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: #999999;
+}
+
+/* Submit — white filled button */
+.submit {
+  align-self: flex-start;
+  padding: 0.75rem 2.25rem;
+  background-color: #ffffff;
+  color: #37b9ac;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.submit:hover {
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  .section {
+    height: auto;
+    min-height: 100vh;
+    align-items: flex-start;
+  }
+  .inner {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    padding: 5rem 1.25rem 3rem;
+  }
+  .row {
+    grid-template-columns: 1fr;
+  }
+  .sub {
+    max-width: 100%;
+  }
+}

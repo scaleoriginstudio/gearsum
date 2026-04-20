@@ -1,0 +1,83 @@
+/* ============================================================
+   GearSumLogoSVG.module.css
+   Fill colours for each named path group in the Gearsum logo.
+   Keeping colours here (not as SVG style attributes) means GSAP
+   can control opacity independently without fighting inline styles.
+   ============================================================ */
+
+/* SVG element itself — block display removes the default inline gap */
+.svgLogo {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Blue pin / badge in the top emblem */
+.pathBlueEmblem {
+  fill: #2170af;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Orange house / arrow in the top emblem */
+.pathOrangeEmblem {
+  fill: #da7e48;
+  stroke-linejoin: round;
+}
+
+/* Teal tool / wrench in the top emblem */
+.pathTealEmblem {
+  fill: #3cbba0;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Orange — G and E letterforms (leftmost) */
+.pathOrange {
+  fill: #df7c30;
+}
+
+/* Coral / salmon — A letterform */
+.pathCoral {
+  fill: #e47b61;
+}
+
+/* Teal — R letterform */
+.pathTealLetter {
+  fill: #37b9ac;
+}
+
+/* Purple — S letterform (gear-styled) */
+.pathPurpleS {
+  fill: #9d92c8;
+}
+
+/* Purple — U letterform */
+.pathPurpleU {
+  fill: #9d92c8;
+}
+
+/* Yellow — M letterform */
+.pathYellow {
+  fill: #f2c449;
+}
+
+/* Green — rightmost letterforms */
+.pathGreen {
+  fill: #95c364;
+}
+
+/* SVG <a> wrapper around each clickable emblem icon */
+.emblemLink {
+  cursor: pointer;
+}
+
+/* Slightly brighten the emblem icon on hover to hint it's clickable */
+.emblemLink:hover {
+  opacity: 0.7;
+}
+
+/* Smooth the hover opacity change */
+.emblemLink path {
+  transition: opacity 0.2s ease;
+}

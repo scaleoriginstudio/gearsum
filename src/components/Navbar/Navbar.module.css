@@ -1,0 +1,118 @@
+/* ============================================================
+   Navbar.module.css
+   Fixed top navigation bar — transparent overlay on the hero.
+   Logo on the left (all white via CSS filter), links on the right.
+   ============================================================ */
+
+/* ----------------------------------------------------------
+   Bar container
+   ---------------------------------------------------------- */
+
+/* Fixed to the top of the viewport so it stays visible while
+   the hero section scrolls / pins beneath it */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3.5rem;
+  padding: 1.5rem 2.5rem;
+  /* Hidden by default — HeroSection's ScrollTrigger onLeave callback sets
+     visibility:visible the instant the background flips to purple.
+     onEnterBack hides it again if the user scrolls back up. */
+  visibility: hidden;
+
+  /* No background needed — the purple hero bg provides the contrast */
+  background: transparent;
+}
+
+/* Non-home page overrides (visibility, colours, logo size) are applied
+   via inline styles in Navbar.tsx — inline always beats the cascade. */
+
+/* ----------------------------------------------------------
+   Logo area
+   ---------------------------------------------------------- */
+
+/* The <a> wrapper around the logo — remove browser link underline */
+.logoLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* Controls the rendered size of the inline SVG in the navbar */
+.logoWrapper {
+  width: 160px;
+  /* Turn every SVG fill and stroke to white using a two-step filter:
+       brightness(0) collapses all colours to black
+       invert(1)     flips black → white
+     Result: the full coloured logo becomes a clean white silhouette */
+  filter: brightness(0) invert(1);
+  /* Block so the wrapper respects the explicit width */
+  display: block;
+}
+
+/* Disable click targets on the SVG's internal emblem <a> elements so the
+   parent Link to "/" captures all clicks on the logo area */
+.logoWrapper a {
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------------
+   Navigation links
+   ---------------------------------------------------------- */
+
+/* Horizontal list of nav items — reset default list styling */
+.navLinks {
+  display: flex;
+  align-items: center;
+  /* Space between each link */
+  gap: 3rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Individual nav link text */
+.navLink {
+  /* White text to sit on the transparent bar over the white hero */
+  color: #ffffff;
+  text-decoration: none;
+  /* Slightly heavier than body copy for readability at small sizes */
+  font-weight: 500;
+  font-size: 1.15rem;
+  /* Smooth opacity transition on hover */
+  transition: opacity 0.2s ease;
+  /* No shadow — navbar only ever appears on the purple background where
+     white text has sufficient natural contrast */
+}
+
+/* Subtle dim on hover — keeps the bar feeling light */
+.navLink:hover {
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    gap: 1.5rem;
+    padding: 1rem 1.25rem;
+  }
+  .logoWrapper {
+    width: 110px;
+  }
+  .navLinks {
+    gap: 1.25rem;
+  }
+  .navLink {
+    font-size: 0.9rem;
+  }
+}

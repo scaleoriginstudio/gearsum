@@ -1,0 +1,174 @@
+/* ── Section shell ─────────────────────────────────────────────────────── */
+.section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+/* ── Background video ─────────────────────────────────────────────────── */
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* ── Dark overlay ──────────────────────────────────────────────────────── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 10, 25, 0.45) 0%,
+    rgba(5, 10, 25, 0.20) 45%,
+    rgba(5, 10, 25, 0.70) 100%
+  );
+  pointer-events: none;
+}
+
+/* ── Header row ────────────────────────────────────────────────────────── */
+.header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 2rem 2.5rem;
+}
+
+/* ── Logo area (text + icons) ──────────────────────────────────────────── */
+.logoArea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.logoText {
+  font-family: 'Causten', 'Arial Narrow', Arial, sans-serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  color: #ffffff;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* The stylised S renders as a dollar-sign glyph matching the brand mark */
+.logoS {
+  font-style: normal;
+}
+
+.logoDotCom {
+  font-weight: 400;
+  font-size: 0.55em;
+  letter-spacing: 0;
+  vertical-align: middle;
+}
+
+.iconRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+.icon:hover {
+  opacity: 1;
+}
+
+/* ── Hamburger button ──────────────────────────────────────────────────── */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: 0.4rem;
+}
+
+.hamburgerLine {
+  display: block;
+  width: 34px;
+  height: 2.5px;
+  background: #ffffff;
+  border-radius: 2px;
+}
+
+/* ── Bottom content ────────────────────────────────────────────────────── */
+.content {
+  position: relative;
+  z-index: 10;
+  padding: 0 2.5rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.tagline {
+  font-family: 'Causten', 'Arial Narrow', Arial, sans-serif;
+  font-size: clamp(1.8rem, 3.8vw, 3.2rem);
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1.25;
+  text-align: left;
+  width: 100%;
+  margin: 0;
+}
+
+.tagline strong {
+  font-weight: 800;
+}
+
+.tagline em {
+  font-style: italic;
+}
+
+/* ── CTA button ────────────────────────────────────────────────────────── */
+.cta {
+  display: inline-block;
+  padding: 0.9rem 3rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.75);
+  color: #ffffff;
+  font-family: 'Causten', 'Arial Narrow', Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  background: transparent;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.cta:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 1.25rem 1.25rem;
+  }
+  .content {
+    padding: 0 1.25rem 2.5rem;
+  }
+  .tagline {
+    font-size: clamp(1.3rem, 5vw, 2rem);
+  }
+}

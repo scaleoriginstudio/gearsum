@@ -1,0 +1,190 @@
+/* ============================================================
+   ProductCarousel.module.css
+   Infinite auto-scrolling row of product cards.
+   ============================================================ */
+
+/* ----------------------------------------------------------
+   Section wrapper
+   ---------------------------------------------------------- */
+
+.section {
+  /* Full width, generous vertical padding */
+  width: 100%;
+  padding: 5rem 0 6rem;
+  /* Same purple as the hero's end-state so the two sections read as one screen */
+  background-color: #9d92c8;
+  /* Prevent the track from creating a horizontal scrollbar on the page */
+  overflow: hidden;
+}
+
+/* ----------------------------------------------------------
+   Carousel viewport + track
+   ---------------------------------------------------------- */
+
+/* Clips the moving track to the section width */
+.viewport {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* The element GSAP moves.
+   display:flex keeps all cards in one horizontal row.
+   width:max-content lets it grow as wide as all cards combined. */
+.track {
+  display: flex;
+  gap: 1.75rem;
+  /* Prevent flex from wrapping onto a second row */
+  flex-wrap: nowrap;
+  /* Let the track be as wide as its children need */
+  width: max-content;
+  /* Small top/bottom padding so card shadows aren't clipped */
+  padding: 0.5rem 0;
+}
+
+/* ----------------------------------------------------------
+   Product card
+   ---------------------------------------------------------- */
+
+.card {
+  /* Fixed card width — consistent across all items */
+  width: 300px;
+  /* Prevent cards from shrinking in the flex row */
+  flex-shrink: 0;
+  background-color: transparent;
+  border-radius: 20px;
+  /* Deeper shadow for a premium lifted feel */
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.11);
+  overflow: hidden;
+  position: relative;
+  /* Smooth shadow on hover */
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+/* Lift the card slightly on hover for interactivity feedback */
+.card:hover {
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+  transform: translateY(-5px);
+}
+
+/* ----------------------------------------------------------
+   Image area
+   ---------------------------------------------------------- */
+
+/* Image fills the entire card — card body overlays on top */
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  background-color: #f0f0f0;
+}
+
+/* ----------------------------------------------------------
+   Card body — text and buttons
+   ---------------------------------------------------------- */
+
+/* Card body floats over the bottom of the image */
+.cardBody {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.75rem 1rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  /* Gradient darkens only the bottom — text stays legible, image shows through */
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.0) 100%);
+}
+
+/* Name and price on one line */
+.namePriceRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* Product name */
+.productName {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Price */
+.price {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* ----------------------------------------------------------
+   Action buttons
+   ---------------------------------------------------------- */
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Shared button base */
+.btnBuy,
+.btnView {
+  flex: 1;
+  padding: 0.42rem 0.5rem;
+  border-radius: 7px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s ease;
+}
+
+.btnBuy:hover,
+.btnView:hover {
+  opacity: 0.85;
+}
+
+/* Primary — filled teal */
+.btnBuy {
+  background-color: #37b9ac;
+  color: #ffffff;
+}
+
+/* Secondary — outlined white */
+.btnView {
+  background-color: transparent;
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+}
+
+/* ----------------------------------------------------------
+   About us link
+   ---------------------------------------------------------- */
+
+.aboutLink {
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 0 1rem;
+}
+
+.aboutAnchor {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.5);
+  padding-bottom: 2px;
+  transition: opacity 0.2s ease;
+}
+
+.aboutAnchor:hover {
+  opacity: 0.7;
+}
