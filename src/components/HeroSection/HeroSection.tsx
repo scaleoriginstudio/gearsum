@@ -153,6 +153,7 @@ export default function HeroSection() {
     });
 
     let animProgress = 0;
+    let transitioned  = false;
 
     function applyProgress(newProgress: number) {
       animProgress = Math.min(1, Math.max(0, newProgress));
@@ -168,8 +169,27 @@ export default function HeroSection() {
       );
     }
 
+    function transitionToSection2() {
+      if (transitioned) return;
+      // Only slide once the hero GSAP animation has visually finished
+      if (tl.progress() < 0.99) return;
+      transitioned = true;
+
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+
+      const main = document.querySelector("main");
+      if (main) {
+        gsap.to(main, { y: -window.innerHeight, duration: 0.9, ease: "power2.inOut" });
+      }
+    }
+
     function onWheel(e: WheelEvent) {
-      if (animProgress >= 1 && e.deltaY > 0) return; // release to normal page scroll
+      if (animProgress >= 1 && e.deltaY > 0) {
+        transitionToSection2();
+        return;
+      }
       e.preventDefault();
 
       let delta = e.deltaY;
@@ -186,12 +206,14 @@ export default function HeroSection() {
     }
 
     function onTouchMove(e: TouchEvent) {
-      if (animProgress >= 1) return; // release to normal scroll
-      e.preventDefault();
-
       const delta = touchStartY - e.touches[0].clientY;
       touchStartY = e.touches[0].clientY;
 
+      if (animProgress >= 1) {
+        if (delta > 5) transitionToSection2();
+        return;
+      }
+      e.preventDefault();
       applyProgress(animProgress + delta * SENSITIVITY * 5);
     }
 
