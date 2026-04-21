@@ -60,7 +60,6 @@
   line-height: 1;
 }
 
-/* The stylised S renders as a dollar-sign glyph matching the brand mark */
 .logoS {
   font-style: normal;
 }
@@ -111,6 +110,68 @@
   border-radius: 2px;
 }
 
+/* ── Full-screen menu overlay ──────────────────────────────────────────── */
+.menuOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 3, 7, 0.97);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menuPanel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  width: 100%;
+  padding: 2rem;
+}
+
+.menuClose {
+  position: absolute;
+  top: -3rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.5rem;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+.menuClose:hover {
+  opacity: 1;
+}
+
+.menuNav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.menuLink {
+  color: #ffffff;
+  text-decoration: none;
+  font-family: 'Causten', 'Arial Narrow', Arial, sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.menuLink:hover {
+  opacity: 1;
+}
+
 /* ── Bottom content ────────────────────────────────────────────────────── */
 .content {
   position: relative;
@@ -118,8 +179,8 @@
   padding: 0 2.5rem 3.5rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 2rem;
+  align-items: flex-start;
+  gap: 1.5rem;
 }
 
 .tagline {
@@ -154,6 +215,7 @@
   text-decoration: none;
   background: transparent;
   transition: background 0.2s ease, border-color 0.2s ease;
+  white-space: nowrap;
 }
 
 .cta:hover {
@@ -162,13 +224,26 @@
 }
 
 @media (max-width: 768px) {
+  /* Use dynamic viewport height so browser chrome doesn't hide content */
+  .section {
+    height: 100dvh;
+  }
+
   .header {
     padding: 1.25rem 1.25rem;
   }
+
   .content {
-    padding: 0 1.25rem 2.5rem;
+    padding: 0 1.25rem 2rem;
+    gap: 1.25rem;
   }
+
   .tagline {
-    font-size: clamp(1.3rem, 5vw, 2rem);
+    font-size: clamp(1.1rem, 4.5vw, 1.6rem);
+  }
+
+  .cta {
+    font-size: 0.9rem;
+    padding: 0.75rem 2rem;
   }
 }

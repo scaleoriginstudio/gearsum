@@ -99,63 +99,93 @@ export default function HeroSection() {
   useEffect(() => {
     const tl = gsap.timeline({ paused: true });
 
-    // Background colour sweeps to purple
     const sectionEl = sectionRef.current;
     if (sectionEl) {
       tl.fromTo(sectionEl, { backgroundColor: "#040307" }, { backgroundColor: "#9d92c8" }, 0);
     }
 
-    // SVG logo zooms in with S as anchor
     const logoEl = logoRef.current;
     if (logoEl) {
       gsap.set(logoEl, { transformOrigin: LOGO_ORIGIN });
       tl.fromTo(logoEl, { scale: 1, opacity: 1 }, { scale: 120, opacity: 0, duration: 0.5 }, 0);
     }
 
-    // Cards zoom + fly inward
     CARDS.forEach((card, i) => {
       const el = cardRefs.current[i];
       if (!el) return;
-
       const baseScale   = MIN_SCALE + card.progress * (MAX_SCALE - MIN_SCALE);
       const baseOpacity = MIN_OPACITY + card.progress * (MAX_OPACITY - MIN_OPACITY);
-
       gsap.set(el, { transformOrigin: card.origin });
-
       tl.fromTo(
         el,
         { scale: baseScale, opacity: baseOpacity, x: 0, y: 0 },
-        {
-          scale:   baseScale + SCROLL_SCALE_DELTA,
-          opacity: baseOpacity + SCROLL_OPACITY_DELTA,
-          x: card.move.x,
-          y: card.move.y,
-        },
+        { scale: baseScale + SCROLL_SCALE_DELTA, opacity: baseOpacity + SCROLL_OPACITY_DELTA, x: card.move.x, y: card.move.y },
         0
       );
     });
 
-    let animProgress  = 0;
-    let transitioned  = false;
-    let scheduled     = false;
+    let animProgress = 0;
+    let transitioned = false;
+    let scheduled    = false;
+
+    function addHeroListeners() {
+      window.addEventListener("wheel",      onWheel,      { passive: false });
+      window.addEventListener("touchstart", onTouchStart, { passive: true });
+      window.addEventListener("touchmove",  onTouchMove,  { passive: false });
+    }
+
+    function removeHeroListeners() {
+      window.removeEventListener("wheel",      onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove",  onTouchMove);
+    }
+
+    // Reverse the transition — called when user swipes up on section-2 or clicks [01]
+    function handleReturn() {
+      window.removeEventListener("requestHeroReturn", handleReturn);
+      if (sectionEl) sectionEl.style.visibility = "";
+
+      const main = document.querySelector("main");
+      if (main) {
+        gsap.to(main, {
+          y: 0,
+          duration: 0.9,
+          ease: "power2.inOut",
+          onComplete: () => {
+            transitioned = false;
+            scheduled    = false;
+            animProgress = 1;
+            addHeroListeners();
+          },
+        });
+      }
+    }
 
     function transitionToSection2() {
       if (transitioned) return;
       transitioned = true;
-
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
+      removeHeroListeners();
 
       const main = document.querySelector("main");
+      // Use section's actual rendered height — on mobile window.innerHeight < 100vh
+      const heroHeight = sectionEl?.offsetHeight ?? window.innerHeight;
+
       if (main) {
-        gsap.to(main, { y: -window.innerHeight, duration: 0.9, ease: "power2.inOut" });
+        gsap.to(main, {
+          y: -heroHeight,
+          duration: 0.9,
+          ease: "power2.inOut",
+          onComplete: () => {
+            // Hide hero so its purple background doesn't bleed into viewport top
+            if (sectionEl) sectionEl.style.visibility = "hidden";
+            window.addEventListener("requestHeroReturn", handleReturn);
+          },
+        });
       }
     }
 
     function applyProgress(newProgress: number) {
       animProgress = Math.min(1, Math.max(0, newProgress));
-
       gsap.to(tl, { progress: animProgress, duration: 0.6, ease: "power2.out", overwrite: true });
 
       if (cardsLayerRef.current) {
@@ -166,7 +196,6 @@ export default function HeroSection() {
         new CustomEvent("heroProgress", { detail: { progress: animProgress } })
       );
 
-      // Once animation is at 100%, auto-transition after the tween settles
       if (animProgress >= 1 && !scheduled) {
         scheduled = true;
         gsap.delayedCall(0.65, transitionToSection2);
@@ -174,13 +203,14 @@ export default function HeroSection() {
     }
 
     function onWheel(e: WheelEvent) {
-      if (animProgress >= 1) return;
-      e.preventDefault();
-
       let delta = e.deltaY;
       if (e.deltaMode === 1) delta *= 16;
       if (e.deltaMode === 2) delta *= 600;
 
+      // At max progress, only allow scrolling backwards (negative delta)
+      if (animProgress >= 1 && delta > 0) return;
+
+      e.preventDefault();
       applyProgress(animProgress + delta * SENSITIVITY);
     }
 
@@ -194,26 +224,24 @@ export default function HeroSection() {
       const delta = touchStartY - e.touches[0].clientY;
       touchStartY = e.touches[0].clientY;
 
-      if (animProgress >= 1) return;
+      // At max progress, only allow swiping backwards (negative delta = swipe down)
+      if (animProgress >= 1 && delta > 0) return;
+
       e.preventDefault();
       applyProgress(animProgress + delta * SENSITIVITY * 5);
     }
 
-    window.addEventListener("wheel", onWheel, { passive: false });
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    addHeroListeners();
+
     return () => {
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
+      removeHeroListeners();
+      window.removeEventListener("requestHeroReturn", handleReturn);
       tl.kill();
     };
   }, []);
 
   return (
     <section id="section-1" ref={sectionRef} className={styles.hero}>
-
-      {/* Product cards */}
       <div ref={cardsLayerRef}>
         {CARDS.map((card, i) => {
           const baseScale   = MIN_SCALE + card.progress * (MAX_SCALE - MIN_SCALE);
@@ -241,11 +269,9 @@ export default function HeroSection() {
         })}
       </div>
 
-      {/* Hero SVG logo */}
       <div ref={logoRef} className={styles.logoWrapper}>
         <GearSumLogoSVG />
       </div>
-
     </section>
   );
 }

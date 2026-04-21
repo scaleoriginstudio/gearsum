@@ -22,6 +22,9 @@
 }
 
 @media (max-width: 768px) {
+  .hero {
+    height: 100dvh;
+  }
   .card {
     width: 120px;
   }

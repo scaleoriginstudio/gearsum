@@ -14,9 +14,8 @@ export default function ScrollCounter() {
   const [active, setActive] = useState(0);
 
   useEffect(() => {
-    // Normal page-scroll detection (sections 2+)
     function updateFromScroll() {
-      if (window.scrollY <= 10) return; // hero handles this range via heroProgress
+      if (window.scrollY <= 10) return;
       const mid = window.scrollY + window.innerHeight / 2;
       let current = 0;
       SECTIONS.forEach((s, i) => {
@@ -26,25 +25,43 @@ export default function ScrollCounter() {
       setActive(current);
     }
 
-    // Hero animation drives section 1 → 2 transition before any page scroll
     function onHeroProgress(e: Event) {
-      if (window.scrollY > 10) return; // page already scrolled; ignore
+      if (window.scrollY > 10) return;
       const { progress } = (e as CustomEvent<{ progress: number }>).detail;
       setActive(progress >= 0.99 ? 1 : 0);
     }
 
-    window.addEventListener("scroll", updateFromScroll, { passive: true });
-    window.addEventListener("heroProgress", onHeroProgress);
+    // When hero returns from section-2, reset counter to section-1
+    function onHeroReturn() {
+      setActive(0);
+    }
+
+    window.addEventListener("scroll",            updateFromScroll, { passive: true });
+    window.addEventListener("heroProgress",       onHeroProgress);
+    window.addEventListener("requestHeroReturn",  onHeroReturn);
+
     return () => {
-      window.removeEventListener("scroll", updateFromScroll);
-      window.removeEventListener("heroProgress", onHeroProgress);
+      window.removeEventListener("scroll",           updateFromScroll);
+      window.removeEventListener("heroProgress",      onHeroProgress);
+      window.removeEventListener("requestHeroReturn", onHeroReturn);
     };
   }, []);
 
-  function scrollToSection(id: string) {
+  function handleClick(id: string) {
+    if (id === "section-1") {
+      // Section-1 is the hero — may need reverse animation rather than scrollIntoView
+      const section2 = document.getElementById("section-2");
+      if (section2) {
+        const rect = section2.getBoundingClientRect();
+        if (rect.top > -20 && rect.top < 20) {
+          // Section-2 is currently active → trigger hero reverse
+          window.dispatchEvent(new Event("requestHeroReturn"));
+          return;
+        }
+      }
+    }
     const el = document.getElementById(id);
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth" });
+    if (el) el.scrollIntoView({ behavior: "smooth" });
   }
 
   return (
@@ -53,7 +70,7 @@ export default function ScrollCounter() {
         <button
           key={s.id}
           className={i === active ? styles.active : styles.inactive}
-          onClick={() => scrollToSection(s.id)}
+          onClick={() => handleClick(s.id)}
           aria-label={`Go to section ${s.label}`}
         >
           [{s.label}]
