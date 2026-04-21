@@ -49,8 +49,7 @@ export default function SecondSection() {
       <div className={styles.content}>
         <p className={styles.tagline}>
           You know the <strong><em>drill</em></strong>. the <strong><em>list</em></strong>,
-          the <strong><em>rush</em></strong>, the<br />
-          &ldquo;mum i need it by tomorrow.&rdquo; we&apos;ve got<br />
+          the <strong><em>rush</em></strong>, the &ldquo;mum i need it by tomorrow.&rdquo; we&apos;ve got
           everything before it becomes a crisis.
         </p>
         <Link href="/shop" className={styles.cta}>
