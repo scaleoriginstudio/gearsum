@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { useRouter } from "next/navigation";
 import GearSumLogoSVG from "./GearSumLogoSVG";
 import styles from "./HeroSection.module.css";
 
@@ -92,44 +91,28 @@ const CARDS = [
 ];
 
 export default function HeroSection() {
-  const router        = useRouter();
   const cardRefs      = useRef<(HTMLAnchorElement | null)[]>([]);
   const cardsLayerRef = useRef<HTMLDivElement>(null);
   const logoRef       = useRef<HTMLDivElement>(null);
   const sectionRef    = useRef<HTMLElement>(null);
-  const photoRef      = useRef<HTMLDivElement>(null);
-  const sceneTwoRef   = useRef<HTMLDivElement>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const tl = gsap.timeline({ paused: true });
 
-    // Phase 1 (0 → 100%): background colour sweeps to purple
+    // Background colour sweeps to purple
     const sectionEl = sectionRef.current;
     if (sectionEl) {
       tl.fromTo(sectionEl, { backgroundColor: "#040307" }, { backgroundColor: "#9d92c8" }, 0);
     }
 
-    // Phase 1 (0 → 100%): hero SVG logo zooms in with S as anchor
+    // SVG logo zooms in with S as anchor
     const logoEl = logoRef.current;
     if (logoEl) {
       gsap.set(logoEl, { transformOrigin: LOGO_ORIGIN });
       tl.fromTo(logoEl, { scale: 1, opacity: 1 }, { scale: 120, opacity: 0, duration: 0.5 }, 0);
     }
 
-    // Phase 2 (50% → 100%): background photo fades in over the purple
-    const photoEl = photoRef.current;
-    if (photoEl) {
-      tl.fromTo(photoEl, { opacity: 0 }, { opacity: 1, duration: 0.25 }, 0.25);
-    }
-
-    // Phase 2 (70% → 100%): white logo + hamburger + text fade in
-    const sceneTwoEl = sceneTwoRef.current;
-    if (sceneTwoEl) {
-      tl.fromTo(sceneTwoEl, { opacity: 0 }, { opacity: 1, duration: 0.15 }, 0.35);
-    }
-
-    // Phase 1 (0 → 100%): cards zoom + fly inward
+    // Cards zoom + fly inward
     CARDS.forEach((card, i) => {
       const el = cardRefs.current[i];
       if (!el) return;
@@ -152,27 +135,12 @@ export default function HeroSection() {
       );
     });
 
-    let animProgress = 0;
+    let animProgress  = 0;
     let transitioned  = false;
-
-    function applyProgress(newProgress: number) {
-      animProgress = Math.min(1, Math.max(0, newProgress));
-      gsap.to(tl, { progress: animProgress, duration: 0.6, ease: "power2.out", overwrite: true });
-
-      const done = animProgress >= 0.99;
-      if (cardsLayerRef.current)  cardsLayerRef.current.style.pointerEvents  = done ? "none" : "";
-      if (logoRef.current)        logoRef.current.style.pointerEvents        = done ? "none" : "";
-      if (sceneTwoRef.current)    sceneTwoRef.current.style.pointerEvents    = done ? "auto" : "none";
-
-      window.dispatchEvent(
-        new CustomEvent("heroProgress", { detail: { progress: animProgress } })
-      );
-    }
+    let scheduled     = false;
 
     function transitionToSection2() {
       if (transitioned) return;
-      // Only slide once the hero GSAP animation has visually finished
-      if (tl.progress() < 0.99) return;
       transitioned = true;
 
       window.removeEventListener("wheel", onWheel);
@@ -185,11 +153,28 @@ export default function HeroSection() {
       }
     }
 
-    function onWheel(e: WheelEvent) {
-      if (animProgress >= 1 && e.deltaY > 0) {
-        transitionToSection2();
-        return;
+    function applyProgress(newProgress: number) {
+      animProgress = Math.min(1, Math.max(0, newProgress));
+
+      gsap.to(tl, { progress: animProgress, duration: 0.6, ease: "power2.out", overwrite: true });
+
+      if (cardsLayerRef.current) {
+        cardsLayerRef.current.style.pointerEvents = animProgress >= 0.99 ? "none" : "";
       }
+
+      window.dispatchEvent(
+        new CustomEvent("heroProgress", { detail: { progress: animProgress } })
+      );
+
+      // Once animation is at 100%, auto-transition after the tween settles
+      if (animProgress >= 1 && !scheduled) {
+        scheduled = true;
+        gsap.delayedCall(0.65, transitionToSection2);
+      }
+    }
+
+    function onWheel(e: WheelEvent) {
+      if (animProgress >= 1) return;
       e.preventDefault();
 
       let delta = e.deltaY;
@@ -209,10 +194,7 @@ export default function HeroSection() {
       const delta = touchStartY - e.touches[0].clientY;
       touchStartY = e.touches[0].clientY;
 
-      if (animProgress >= 1) {
-        if (delta > 5) transitionToSection2();
-        return;
-      }
+      if (animProgress >= 1) return;
       e.preventDefault();
       applyProgress(animProgress + delta * SENSITIVITY * 5);
     }
@@ -231,92 +213,38 @@ export default function HeroSection() {
   return (
     <section id="section-1" ref={sectionRef} className={styles.hero}>
 
-      {/* Product cards — wrapped so pointer events can be killed in bulk */}
+      {/* Product cards */}
       <div ref={cardsLayerRef}>
-      {CARDS.map((card, i) => {
-        const baseScale   = MIN_SCALE + card.progress * (MAX_SCALE - MIN_SCALE);
-        const baseOpacity = MIN_OPACITY + card.progress * (MAX_OPACITY - MIN_OPACITY);
-        return (
-          <a
-            key={i}
-            href={card.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            ref={(el) => { cardRefs.current[i] = el; }}
-            className={styles.card}
-            style={{
-              ...(card.pos as React.CSSProperties),
-              transform: `scale(${baseScale})`,
-              transformOrigin: card.origin,
-              opacity: baseOpacity,
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={card.img} alt={card.label} className={styles.cardImage} />
-            <p className={styles.cardLabel}>{card.label}</p>
-          </a>
-        );
-      })}
+        {CARDS.map((card, i) => {
+          const baseScale   = MIN_SCALE + card.progress * (MAX_SCALE - MIN_SCALE);
+          const baseOpacity = MIN_OPACITY + card.progress * (MAX_OPACITY - MIN_OPACITY);
+          return (
+            <a
+              key={i}
+              href={card.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              ref={(el) => { cardRefs.current[i] = el; }}
+              className={styles.card}
+              style={{
+                ...(card.pos as React.CSSProperties),
+                transform: `scale(${baseScale})`,
+                transformOrigin: card.origin,
+                opacity: baseOpacity,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={card.img} alt={card.label} className={styles.cardImage} />
+              <p className={styles.cardLabel}>{card.label}</p>
+            </a>
+          );
+        })}
       </div>
 
-      {/* Hero SVG logo — fades out in second half */}
+      {/* Hero SVG logo */}
       <div ref={logoRef} className={styles.logoWrapper}>
         <GearSumLogoSVG />
       </div>
-
-      {/* Background photo — fades in from 50% scroll onward */}
-      <div ref={photoRef} className={styles.photo} />
-
-      {/* Scene 2 overlay — white logo + hamburger + tagline, fades in from 70% */}
-      <div ref={sceneTwoRef} className={styles.sceneTwo}>
-        <header className={styles.s2Header}>
-          <div className={styles.s2LogoArea}>
-            <button className={styles.s2LogoLink} onClick={() => router.push("/")}>
-              <div className={styles.s2LogoWrapper}>
-                <GearSumLogoSVG />
-              </div>
-            </button>
-          </div>
-          <button className={styles.s2Hamburger} aria-label="Open menu" onClick={() => setMenuOpen(true)}>
-            <span className={styles.s2Line} />
-            <span className={styles.s2Line} />
-          </button>
-        </header>
-
-        <div className={styles.s2Content}>
-          <p className={styles.s2Tagline}>
-            You know the <strong><em>drill</em></strong>. the <strong><em>list</em></strong>,{" "}
-            the <strong><em>rush</em></strong>, the<br />
-            &ldquo;mum i need it by tomorrow.&rdquo; we&apos;ve got<br />
-            everything before it becomes a crisis.
-          </p>
-          <a href="https://www.amazon.com" target="_blank" rel="noopener noreferrer" className={styles.s2Cta}>Explore our collection</a>
-        </div>
-      </div>
-
-      {/* Full-screen navigation menu */}
-      {menuOpen && (
-        <div className={styles.menuOverlay}>
-          <button className={styles.menuClose} aria-label="Close menu" onClick={() => setMenuOpen(false)}>
-            <span className={styles.menuCloseLine} />
-            <span className={styles.menuCloseLine} />
-          </button>
-          <nav className={styles.menuNav}>
-            <a href="https://www.amazon.com" target="_blank" rel="noopener noreferrer" className={styles.menuItem} onClick={() => setMenuOpen(false)}>
-              Shop
-            </a>
-            <button className={styles.menuItem} onClick={() => { setMenuOpen(false); document.getElementById("section-1")?.scrollIntoView({ behavior: "smooth" }); }}>
-              Home <span className={styles.menuIndex}>[1]</span>
-            </button>
-            <button className={styles.menuItem} onClick={() => { setMenuOpen(false); document.getElementById("section-3")?.scrollIntoView({ behavior: "smooth" }); }}>
-              About us <span className={styles.menuIndex}>[3]</span>
-            </button>
-            <button className={styles.menuItem} onClick={() => { setMenuOpen(false); document.getElementById("section-4")?.scrollIntoView({ behavior: "smooth" }); }}>
-              Contact <span className={styles.menuIndex}>[4]</span>
-            </button>
-          </nav>
-        </div>
-      )}
 
     </section>
   );
