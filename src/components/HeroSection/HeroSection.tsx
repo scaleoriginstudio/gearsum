@@ -154,19 +154,10 @@ export default function HeroSection() {
 
     let animProgress = 0;
 
-    function onWheel(e: WheelEvent) {
-      if (animProgress >= 1 && e.deltaY > 0) return; // release to normal page scroll
-      e.preventDefault();
-
-      let delta = e.deltaY;
-      if (e.deltaMode === 1) delta *= 16;
-      if (e.deltaMode === 2) delta *= 600;
-
-      animProgress = Math.min(1, Math.max(0, animProgress + delta * SENSITIVITY));
-
+    function applyProgress(newProgress: number) {
+      animProgress = Math.min(1, Math.max(0, newProgress));
       gsap.to(tl, { progress: animProgress, duration: 0.6, ease: "power2.out", overwrite: true });
 
-      // Swap interactivity: cards/logo are live during the animation, sceneTwo after
       const done = animProgress >= 0.99;
       if (cardsLayerRef.current)  cardsLayerRef.current.style.pointerEvents  = done ? "none" : "";
       if (logoRef.current)        logoRef.current.style.pointerEvents        = done ? "none" : "";
@@ -177,8 +168,42 @@ export default function HeroSection() {
       );
     }
 
+    function onWheel(e: WheelEvent) {
+      if (animProgress >= 1 && e.deltaY > 0) return; // release to normal page scroll
+      e.preventDefault();
+
+      let delta = e.deltaY;
+      if (e.deltaMode === 1) delta *= 16;
+      if (e.deltaMode === 2) delta *= 600;
+
+      applyProgress(animProgress + delta * SENSITIVITY);
+    }
+
+    let touchStartY = 0;
+
+    function onTouchStart(e: TouchEvent) {
+      touchStartY = e.touches[0].clientY;
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      if (animProgress >= 1) return; // release to normal scroll
+      e.preventDefault();
+
+      const delta = touchStartY - e.touches[0].clientY;
+      touchStartY = e.touches[0].clientY;
+
+      applyProgress(animProgress + delta * SENSITIVITY * 5);
+    }
+
     window.addEventListener("wheel", onWheel, { passive: false });
-    return () => { window.removeEventListener("wheel", onWheel); tl.kill(); };
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      tl.kill();
+    };
   }, []);
 
   return (
